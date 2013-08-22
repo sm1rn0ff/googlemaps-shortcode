@@ -27,10 +27,11 @@ function gmaps_shortcode($atts)
 
 	$val = geocode_address($address.' '.$zipcode.' '.$city.' '.$country);
 
+	$output = 	'<div id="'.$div_id.'"></div>';
+
 	if($val)
 	{
-		$output = 	'   <div id="'.$div_id.'"></div>
-						<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3.exp&amp;sensor=false"></script>
+		$output = 	'   <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3.exp&amp;sensor=false"></script>
 						<script type="text/javascript">
 
 						function initialize()
@@ -69,7 +70,7 @@ function geocode_address($address)
 	$response['lng'] = '';
 
 	$encoded_address = str_replace(' ', '+', 'http://maps.googleapis.com/maps/api/geocode/json?address=' . $address);
-	
+
 	// To assure compatibility accross the servers we prefer use wp_remote_get() instead of file_get_contents()
 
 	//$json_response = file_get_contents($encoded_address . '&sensor=false', 0, null, null);

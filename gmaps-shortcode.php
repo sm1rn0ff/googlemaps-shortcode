@@ -14,7 +14,9 @@ add_shortcode( 'gmap', 'gmaps_shortcode' );
 function gmaps_shortcode($atts)
 {
 	extract( shortcode_atts( array(
-	'div_id'			=> 'gmaps'
+	'div_id'			=> 'gmaps',
+	'width'				=> '640',
+	'height'			=> '280',
 	'address' 			=> '',
 	'zipcode' 			=> '',
 	'city'	  			=> '',
@@ -27,11 +29,11 @@ function gmaps_shortcode($atts)
 
 	$val = geocode_address($address.' '.$zipcode.' '.$city.' '.$country);
 
-	$output = 	'<div id="'.$div_id.'"></div>';
+	$output = '<div id="'.$div_id.'" style="width:'. $width .';height:'. $height .';"></div>';
 
 	if($val)
 	{
-		$output = 	'   <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3.exp&amp;sensor=false"></script>
+		$output.= 	'   <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3.exp&amp;sensor=false"></script>
 						<script type="text/javascript">
 
 						function initialize()

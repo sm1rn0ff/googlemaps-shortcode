@@ -1,12 +1,12 @@
 <?php
 /*
-Plugin Name: Google Maps Shortcode
-Plugin URI: http://www.globalis-ms.com
-Description: 
-Version: 1.0.0
-Author: Georges-Antoine RICHARD, Globalis-ms
-Author URI: http://www.globalis-ms.com
-License: GPL2
+Plugin Name: 			Google Maps Shortcode
+Plugin URI: 			http://www.globalis-ms.com
+Description: 			This wordpress plugin allow you to simply insert a google maps inside a post content via a shortcode
+Version: 				1.0.0
+Author: 				Georges-Antoine RICHARD, Globalis-ms
+Author URI: 			http://www.globalis-ms.com
+License: 				GPL2
 */
 
 add_shortcode( 'gmap', 'gmaps_shortcode' );
@@ -51,6 +51,7 @@ function gmaps_shortcode($atts)
 		    										center: myLatlng,
 		    										mapTypeId: google.maps.MapTypeId.'. $map_type .'
 		  										};
+
 		  					map = new google.maps.Map(document.getElementById("'. $div_id .'"), mapOptions);
 
 		  					var infowindow = new google.maps.InfoWindow({ content: contentString });

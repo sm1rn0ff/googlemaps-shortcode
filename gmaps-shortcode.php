@@ -4,7 +4,7 @@ Plugin Name: Google Maps Shortcode
 Plugin URI: http://www.globalis-ms.com
 Description: 
 Version: 1.0.0
-Author: Georges-Antoine RICHARD, Globalis-MediaSystem
+Author: Georges-Antoine RICHARD, Globalis-ms
 Author URI: http://www.globalis-ms.com
 License: GPL2
 */
@@ -15,24 +15,30 @@ function gmaps_shortcode($atts)
 {
 	extract( shortcode_atts( array(
 	'div_id'			=> 'gmaps',
-	'width'				=> '640',
+	'width'				=> '540',
 	'height'			=> '280',
 	'address' 			=> '',
 	'zipcode' 			=> '',
 	'city'	  			=> '',
 	'country' 			=> '',
-	'marker_title' 		=> '',
+	'marker_title' 		=> 'More information',
 	'marker_content' 	=> '',
 	'marker_tooltip'	=> '',
 	'zoom_level'		=> '15',
+	'map_type'			=> 'ROADMAP',
 	), $atts ) );
 
 	$val = geocode_address($address.' '.$zipcode.' '.$city.' '.$country);
 
-	$output = '<div id="'.$div_id.'" style="width:'. $width .';height:'. $height .';"></div>';
+	$output = '<div id="'.$div_id.'" style="width:'. $width .'px;height:'. $height .'px;"></div>';
 
 	if($val)
-	{
+	{	
+		$map_type_array = array('ROADMAP', 'SATELLITE', 'HYBRID', 'TERRAIN');
+
+		$map_type = in_array($map_type, $map_type_array) ? $map_type : $map_type_array[0];
+		$marker_content = !empty($marker_content) ? $marker_content : $address.' '.$zipcode.' '.$city;
+
 		$output.= 	'   <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3.exp&amp;sensor=false"></script>
 						<script type="text/javascript">
 
@@ -43,7 +49,7 @@ function gmaps_shortcode($atts)
 		  					var mapOptions = 	{
 		    										zoom: '.$zoom_level.',
 		    										center: myLatlng,
-		    										mapTypeId: google.maps.MapTypeId.ROADMAP
+		    										mapTypeId: google.maps.MapTypeId.'. $map_type .'
 		  										};
 		  					map = new google.maps.Map(document.getElementById("'. $div_id .'"), mapOptions);
 
@@ -56,7 +62,7 @@ function gmaps_shortcode($atts)
 		  					});
 						}
 							
-							google.maps.event.addDomListener(window, "load", initialize);	
+						google.maps.event.addDomListener(window, "load", initialize);	
 
 					</script>					
 					';

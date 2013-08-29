@@ -77,50 +77,59 @@ if(!class_exists('gmapsc'))
 
 		private function geocode_address($address)
 		{
-			$response = array();
-			$response['lat'] = '';
-			$response['lng'] = '';
+			$address_clean = str_replace(' ', '+',  trim($address));
 
-			$encoded_address = str_replace(' ', '+', 'http://maps.googleapis.com/maps/api/geocode/json?address=' . $address);
+			if ( false === ( $response = get_transient( 'gmaps_'.$address_clean ) ) )
+			{	
+				$response = array();
+				$response['lat'] = '';
+				$response['lng'] = '';
 
-			// To assure compatibility accross the servers we prefer use wp_remote_get() instead of file_get_contents()
+				$encoded_address = 'http://maps.googleapis.com/maps/api/geocode/json?address=' . $address_clean;
 
-			//$json_response = file_get_contents($encoded_address . '&sensor=false', 0, null, null);
-			$json_response = wp_remote_get($encoded_address . '&sensor=false');
+				// To assure compatibility accross the servers we prefer use wp_remote_get() instead of file_get_contents()
 
-			if ( is_wp_error( $json_response ) )
-			{
-			   $error_message = $json_response->get_error_message();
-			   //TODO : log error 
-			}
-			else
-			{
-				$decode_response = json_decode($json_response['body']);
+				//$json_response = file_get_contents($encoded_address . '&sensor=false', 0, null, null);
+				$json_response = wp_remote_get($encoded_address . '&sensor=false');
 
-				switch($decode_response->status)
+				if ( is_wp_error( $json_response ) )
 				{
-					case 'OK' :
-								$response['lat'] = $decode_response->results[0]->geometry->location->lat;
-								$response['lng'] = $decode_response->results[0]->geometry->location->lng;
-					break;
-
-					case 'ZERO_RESULTS' :
-
-					case 'OVER_QUERY_LIMIT' :
-
-					case 'REQUEST_DENIED' :
-
-					case 'INVALID_REQUEST' :
-
-					case 'UNKNOWN_ERROR' :
-
-						return null;
-
-					default:
+				   $error_message = $json_response->get_error_message();
+				   //TODO : log error 
+				   return null;
 				}
+				else
+				{
+					$decode_response = json_decode($json_response['body']);
 
-				return $response;
+					switch($decode_response->status)
+					{
+						case 'OK' :
+									$response['lat'] = $decode_response->results[0]->geometry->location->lat;
+									$response['lng'] = $decode_response->results[0]->geometry->location->lng;
+						break;
+
+						case 'ZERO_RESULTS' :
+
+						case 'OVER_QUERY_LIMIT' :
+
+						case 'REQUEST_DENIED' :
+
+						case 'INVALID_REQUEST' :
+
+						case 'UNKNOWN_ERROR' :
+
+							return null;
+
+						default:
+					}
+
+					set_transient( 'gmaps_'.$address_clean, $response, 4 * WEEK_IN_SECONDS );
+					
+				}
 			}
+
+			return $response;
 		}
 	}
 

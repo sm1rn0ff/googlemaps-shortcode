@@ -105,8 +105,12 @@ if(!class_exists('gmapsc'))
 					switch($decode_response->status)
 					{
 						case 'OK' :
+
 									$response['lat'] = $decode_response->results[0]->geometry->location->lat;
 									$response['lng'] = $decode_response->results[0]->geometry->location->lng;
+
+									set_transient( 'gmaps_'.$address_clean, $response, 4 * WEEK_IN_SECONDS );
+
 						break;
 
 						case 'ZERO_RESULTS' :
@@ -119,13 +123,9 @@ if(!class_exists('gmapsc'))
 
 						case 'UNKNOWN_ERROR' :
 
-							return null;
-
-						default:
+									return null;
+									
 					}
-
-					set_transient( 'gmaps_'.$address_clean, $response, 4 * WEEK_IN_SECONDS );
-					
 				}
 			}
 
